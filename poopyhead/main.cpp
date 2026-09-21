@@ -1,103 +1,139 @@
+#include <chrono>
 #include <iostream>
-#include <limits>
-#include <string>
-#include "cipher.h"
+#include <vector>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include "factorization.h"
+#include "prime.h"
 
-/// @brief Prints a short guide for console arguments.
-/// @details The program needs mode, shift, alphabet and text.
-/// Text with spaces must be written inside quotation marks.
-void helpme()
+using namespace std;
+using Clock = chrono::steady_clock;
+
+void menu()
 {
-    std::cout << "Console mode:\n";
-    std::cout << "cipher.exe encrypt 3 \"alphabet\" \"text\"\n";
-    std::cout << "cipher.exe decrypt 3 \"alphabet\" \"text\"\n";
-    std::cout << "\n";
-    std::cout << "Example:\n";
-    std::cout << "cipher.exe encrypt 3 \"àáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ0123456789 .,!?\" \"ïðèâåò, ìèð!\"\n";
+    cout << "\n1  Factorization by possible divisors\n";
+    cout << "2  Factorization by Fermat method\n";
+    cout << "3  Sieve of Eratosthenes\n";
+    cout << "4  Perfect numbers\n";
+    cout << "0  Exit\n";
+    cout << " ";
 }
 
-/// @brief Checks if the entered mode can be used.
-/// @param mode Mode entered by the user or passed in console.
-/// @return true for encrypt or decrypt mode, otherwise false.
-bool correct(const std::string& mode)
+void printTime(Clock::time_point start, Clock::time_point finish)
 {
-    return mode == "encrypt" || mode == "decrypt";
+    auto elapsed = chrono::duration_cast<chrono::microseconds>(finish - start);
+    cout << "Time: " << elapsed.count() << " microseconds\n";
 }
 
-/// @brief Runs encryption or decryption using selected mode.
-/// @param mode Program mode: encrypt or decrypt.
-/// @param text Text that will be processed.
-/// @param alphabet Alphabet used for moving symbols.
-/// @param shift Number of positions for the shift.
-/// @return Result text after encryption or decryption.
-std::string postext( const std::string& mode, const std::string& text, const std::string& alphabet, int shift)
+long long readnumber()
 {
-    // Choose the needed function based on user mode.
-    if (mode == "encrypt")
+    long long number;
+
+    cout << "Number: ";
+    cin >> number;
+
+    return number;
+}
+
+int main()
+{
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
+    int choice;
+
+    do
     {
-        return Encrypt(text, alphabet, shift);
-    }
+        menu();
+        cin >> choice;
 
-    return Decrypt(text, alphabet, shift);
-}
+        Clock::time_point start;
+        Clock::time_point finish;
 
-/// @brief Starts the program in interactive mode.
-/// @details The program asks the user for alphabet, mode, shift and text.
-void sussybaka()
-{
-    std::string alphabet;
-    std::string mode;
-    std::string text;
-    int shift;
+        switch (choice)
+        {
+        case 1:
+        {
+            long long number = readnumber();
 
-    std::cout << "Interactive mode\n\n";
+            start = Clock::now();
+            vector<long long> factors = dividefactor(number);
+            finish = Clock::now();
 
-    std::cout << "Enter alphabet: ";
-    std::getline(std::cin, alphabet);
-    std::cout << "Enter mode (encrypt/decrypt): ";
-    std::getline(std::cin, mode);
-    std::cout << "Enter shift: ";
-    std::cin >> shift;
+            printfactors(number, factors);
+            break;
+        }
+        case 2:
+        {
+            long long number = readnumber();
 
-    // Remove Enter left after reading the number.
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            start = Clock::now();
+            vector<long long> factors = fermatfactor(number);
+            finish = Clock::now();
 
-    std::cout << "Enter text: ";
-    std::getline(std::cin, text);
+            printfactors(number, factors);
+            break;
+        }
+        case 3:
+        {
+            int limit;
 
-    std::string result = postext(mode, text, alphabet, shift);
+            cout << "Maximum value: ";
+            cin >> limit;
 
-    std::cout << "\nResult: " << result << "\n";
-}
+            if (limit < 1)
+            {
+                cout << "The limit must be positive.\n";
+                break;
+            }
 
-/// @brief Starts the program using console arguments.
-/// @details Required order: mode, shift, alphabet, text.
-/// @param argc Number of received console arguments.
-/// @param argv Array with console argument values.
-void console(int argc, char* argv[])
-{
-    std::string mode = argv[1]; int shift = std::stoi(argv[2]); std::string alphabet = argv[3]; std::string text = argv[4];
+            start = Clock::now();
+            vector<bool> prime_table = sieve(limit);
+            finish = Clock::now();
 
-    std::string result = postext(mode, text, alphabet, shift);
+            printprimes(limit, prime_table);
+            break;
+        }
+        case 4:
+        {
+            int limit;
 
-    std::cout << "Result: " << result << "\n";
-}
+            cout << "Maximum value: ";
+            cin >> limit;
 
-/// @brief Starts console or interactive program mode.
-/// @param argc Number of command line arguments.
-/// @param argv Command line argument list.
-/// @return 0 when the program finishes normally.
-int main(int argc, char* argv[])
-{
-    // Arguments mean console mode; no arguments mean interactive mode.
-    if (argc > 1)
-    {
-        console(argc, argv);
-    }
-    else
-    {
-        sussybaka();
-    }
+            if (limit < 1)
+            {
+                cout << "The limit must be positive.\n";
+                break;
+            }
+
+            start = Clock::now();
+            vector<bool> prime_table = sieve(limit);
+
+            cout << "Perfect numbers:\n";
+
+            for (int number = 2; number <= limit; number++)
+            {
+                if (perfect(number, prime_table))
+                {
+                    cout << number << ' ';
+                }
+            }
+
+            cout << '\n';
+            finish = Clock::now();
+            break;
+        }
+        }
+
+        if (choice >= 1 && choice <= 4)
+        {
+            printTime(start, finish);
+        }
+    } while (choice != 0);
 
     return 0;
 }
