@@ -1,0 +1,27 @@
+2026-10-27 09:02:07 | Application started
+2026-10-27 09:02:11 | Registration started
+2026-10-27 09:02:31 | Registration completed
+2026-10-27 09:02:33 | Login started
+2026-10-27 09:02:43 | Login failed
+2026-10-27 09:03:40 | Application started
+2026-10-27 09:03:42 | Login started
+2026-10-27 09:03:51 | Login failed
+2026-10-27 09:03:52 | Registration started
+2026-10-27 09:04:00 | Registration rejected: short password
+2026-10-27 09:04:02 | Login started
+2026-10-27 09:04:04 | Login failed
+2026-10-27 09:04:05 | Registration started
+2026-10-27 09:04:12 | Registration completed
+2026-10-27 09:04:13 | Login started
+2026-10-27 09:04:20 | Login successful
+2026-10-27 09:04:22 | Profile viewed: no personal data
+2026-10-27 09:04:23 | Personal data editing started
+2026-10-27 09:04:50 | Personal data saved | phone=*********88 | card=************8888 | cvv_synthetic=459
+2026-10-27 09:04:53 | Profile viewed | phone=*********88 | card=************8888 | cvv=[hidden]
+2026-10-27 09:07:28 | Logout
+2026-10-27 09:07:29 | Application closed
+2026-10-27 10:38:28 | Application started
+2026-10-27 10:38:31 | Login started
+2026-10-27 10:38:37 | Login successful
+2026-10-27 10:38:40 | Profile viewed | phone=*********88 | card=************8888 | cvv=[hidden]
+2026-10-27 10:38:44 | Profile viewed | phone=*********88 | card=************8888 | cvv=[hidden]
